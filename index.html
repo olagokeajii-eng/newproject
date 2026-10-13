@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TEST YOUR KNOWLEDGE – JAMB, WAEC & Aptitude Online Practice</title>
+  <meta name="description"
+    content="Nigeria's premier online practice platform for JAMB UTME, WAEC SSCE, NECO, and Job Aptitude tests. Practice with authentic timed past questions, get instant scores, and master weak topics." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    /* Immediate theme initialization to prevent flash */
+    (function () {
+      const saved = localStorage.getItem('tyk_theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- ==================== SPLASH / AUTH SCREEN ==================== -->
+  <div id="app-root">
+
+    <!-- AUTH MODAL -->
+    <div id="auth-overlay" class="auth-overlay active" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <div class="auth-backdrop"></div>
+      <div class="auth-card glass-card">
+        <div class="auth-header-actions">
+          <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" aria-label="Toggle light or dark theme"
+            title="Toggle Theme">
+            <span class="theme-icon">🌙</span>
+            <span class="theme-text">Dark Mode</span>
+          </button>
+        </div>
+
+        <div class="auth-logo">
+          <div class="logo-icon" aria-hidden="true">📚</div>
+          <h1 class="logo-text" id="auth-title">TEST YOUR <span class="gradient-text">KNOWLEDGE</span></h1>
+          <p class="logo-sub">JAMB · WAEC · NECO · Job Aptitude Practice</p>
+        </div>
+
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" id="login-tab" role="tab" aria-selected="true"
+            onclick="switchAuthTab('login')">Login</button>
+          <button class="auth-tab" id="register-tab" role="tab" aria-selected="false"
+            onclick="switchAuthTab('register')">Register</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <form id="login-form" class="auth-form" onsubmit="handleLogin(event)" novalidate>
+          <div class="form-group">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" name="email" value="student@test.com" placeholder="your@email.com"
+              autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" value="password" placeholder="••••••••"
+              autocomplete="current-password" required />
+          </div>
+          <button type="submit" id="btn-login-submit" class="btn-primary btn-full" aria-label="Login to start practice">
+            <span>Login to Practice</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button type="button" class="btn-demo-quick" onclick="quickDemoLogin()"
+            aria-label="Quick one-click login with demo account">
+            <span>⚡ 1-Click Quick Demo Access</span>
+          </button>
+          <p class="auth-hint">
+            Demo Account: <button type="button" class="btn-link" onclick="fillDemoCredentials()">student@test.com /
+              password</button>
+          </p>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)" novalidate>
+          <div class="form-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" placeholder="Chidi Adeleke" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" placeholder="chidi@example.ng" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" placeholder="Min 6 characters" autocomplete="new-password"
+              required />
+          </div>
+          <div class="form-group">
+            <label for="reg-exam-type">Target Examination</label>
+            <select id="reg-exam-type">
+              <option value="JAMB">JAMB (UTME)</option>
+              <option value="WAEC">WAEC (SSCE)</option>
+              <option value="NECO">NECO</option>
+              <option value="Aptitude">Job Aptitude</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <span>Create Free Account</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== MAIN APP ==================== -->
+    <div id="main-app" class="hidden">
+
+      <!-- TOP NAVIGATION -->
+      <nav class="topnav" id="topnav" role="navigation" aria-label="Main Navigation">
+        <div class="nav-brand">
+          <span class="nav-logo" aria-hidden="true">📚</span>
+          <span class="nav-title">TEST YOUR <span class="gradient-text">KNOWLEDGE</span></span>
+        </div>
+        <div class="nav-links">
+          <a href="#" class="nav-link active" onclick="showPage('dashboard')" id="nav-item-dashboard">Dashboard</a>
+          <a href="#" class="nav-link" onclick="showPage('leaderboard')" id="nav-item-leaderboard">🏆 Leaderboard</a>
+          <a href="#" class="nav-link" onclick="showPage('analysis')" id="nav-item-analysis">📊 Topic Analysis</a>
+          <a href="#" class="nav-link" onclick="showPage('subscription')" id="nav-item-subscription">💎 Pricing &
+            Plans</a>
+        </div>
+        <div class="nav-right">
+          <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" aria-label="Toggle light or dark theme"
+            title="Toggle Light/Dark Theme">
+            <span class="theme-icon">🌙</span>
+            <span class="theme-label">Dark Mode</span>
+          </button>
+          <div class="nav-user" id="nav-user-info">
+            <div class="user-avatar" id="nav-avatar" aria-hidden="true">S</div>
+            <div class="user-meta">
+              <span class="user-name" id="nav-name">Student</span>
+              <span class="user-badge free" id="nav-badge">FREE</span>
+            </div>
+            <button class="btn-icon" onclick="handleLogout()" title="Logout" aria-label="Logout">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ===================== DASHBOARD PAGE ===================== -->
+      <div id="page-dashboard" class="page active">
+        <div class="page-hero">
+          <div class="hero-content">
+            <div class="hero-greeting" id="hero-greeting">Good morning, Student! 👋</div>
+            <h2 class="hero-title">Ready to <span class="gradient-text">ace your exam</span>?</h2>
+            <p class="hero-sub">Choose a practice mode and start your timed session below</p>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-card glass-card">
+              <div class="stat-icon">📝</div>
+              <div class="stat-val" id="stat-total-exams">0</div>
+              <div class="stat-label">Exams Taken</div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon">🎯</div>
+              <div class="stat-val" id="stat-avg-score">0%</div>
+              <div class="stat-label">Avg Score</div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-val" id="stat-streak">0</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon">🏅</div>
+              <div class="stat-val" id="stat-rank">#--</div>
+              <div class="stat-label">Global Rank</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXAM SELECTION SECTION -->
+        <div class="section">
+          <h3 class="section-title">Choose Your <span class="gradient-text">Practice Mode</span></h3>
+
+          <div class="exam-types-grid">
+            <div class="exam-type-card glass-card" onclick="selectExamType('JAMB')">
+              <div class="exam-type-badge jamb">JAMB</div>
+              <div class="exam-type-icon">🎓</div>
+              <h4>JAMB UTME</h4>
+              <p>Practice with authentic JAMB past questions across all subjects</p>
+              <div class="exam-type-meta">
+                <span>📚 4 Subjects</span>
+                <span>⏱ 120 mins</span>
+                <span>❓ 60 Qs</span>
+              </div>
+              <div class="exam-type-subjects">
+                <span class="subject-chip">English</span>
+                <span class="subject-chip">Maths</span>
+                <span class="subject-chip">Physics</span>
+                <span class="subject-chip">Chemistry</span>
+              </div>
+            </div>
+
+            <div class="exam-type-card glass-card" onclick="selectExamType('WAEC')">
+              <div class="exam-type-badge waec">WAEC</div>
+              <div class="exam-type-icon">📖</div>
+              <h4>WAEC SSCE</h4>
+              <p>WAEC/WASSCE past questions with detailed answer explanations</p>
+              <div class="exam-type-meta">
+                <span>📚 6+ Subjects</span>
+                <span>⏱ 90 mins</span>
+                <span>❓ 50 Qs</span>
+              </div>
+              <div class="exam-type-subjects">
+                <span class="subject-chip">English</span>
+                <span class="subject-chip">Maths</span>
+                <span class="subject-chip">Biology</span>
+                <span class="subject-chip">Economics</span>
+              </div>
+            </div>
+
+            <div class="exam-type-card glass-card" onclick="selectExamType('NECO')">
+              <div class="exam-type-badge neco">NECO</div>
+              <div class="exam-type-icon">📜</div>
+              <h4>NECO SSCE</h4>
+              <p>Comprehensive NECO past questions with topic breakdown</p>
+              <div class="exam-type-meta">
+                <span>📚 6+ Subjects</span>
+                <span>⏱ 90 mins</span>
+                <span>❓ 50 Qs</span>
+              </div>
+              <div class="exam-type-subjects">
+                <span class="subject-chip">English</span>
+                <span class="subject-chip">Maths</span>
+                <span class="subject-chip">Civic</span>
+                <span class="subject-chip">Commerce</span>
+              </div>
+            </div>
+
+            <div class="exam-type-card glass-card" onclick="selectExamType('Aptitude')">
+              <div class="exam-type-badge apt">APTITUDE</div>
+              <div class="exam-type-icon">💼</div>
+              <h4>Job Aptitude</h4>
+              <p>Corporate aptitude tests for banks, oil companies, and government agencies</p>
+              <div class="exam-type-meta">
+                <span>📚 5 Sections</span>
+                <span>⏱ 60 mins</span>
+                <span>❓ 40 Qs</span>
+              </div>
+              <div class="exam-type-subjects">
+                <span class="subject-chip">Verbal</span>
+                <span class="subject-chip">Numerical</span>
+                <span class="subject-chip">Abstract</span>
+                <span class="subject-chip">Logical</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="section">
+          <h3 class="section-title">Recent Activity</h3>
+          <div id="recent-activity-list" class="activity-list">
+            <div class="activity-empty">
+              <div class="activity-empty-icon">📋</div>
+              <p>No exams taken yet. Start practicing above!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- WEEKLY TOPIC ANALYSIS BANNER -->
+        <div class="section">
+          <div class="week-analysis-banner glass-card">
+            <div class="wab-left">
+              <span class="wab-badge">🔥 This Week's Focus</span>
+              <h3>Weak Areas Detected</h3>
+              <p id="week-topic-text">Complete at least 3 practice sessions to see your weak area analysis.</p>
+            </div>
+            <div class="wab-right">
+              <button class="btn-secondary" onclick="showPage('analysis')">View Full Analysis →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== EXAM SETUP PAGE =================== -->
+      <div id="page-exam-setup" class="page">
+        <div class="page-header">
+          <button class="btn-back" onclick="showPage('dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <h2 class="page-title">Configure Your <span class="gradient-text">Practice Session</span></h2>
+        </div>
+
+        <div class="setup-grid">
+          <div class="setup-main glass-card">
+            <div class="setup-exam-badge" id="setup-exam-badge">JAMB</div>
+            <h3 id="setup-exam-title">JAMB UTME Practice</h3>
+
+            <!-- SUBJECT SELECTION -->
+            <div class="setup-section">
+              <h4>📚 Select Subjects</h4>
+              <div id="subject-checkboxes" class="subject-grid"></div>
+            </div>
+
+            <!-- YEAR SELECTION -->
+            <div class="setup-section">
+              <h4>📅 Question Year</h4>
+              <div class="year-options">
+                <label class="radio-option">
+                  <input type="radio" name="year" value="random" checked /> Random Mix
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="year" value="2023" /> 2023
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="year" value="2022" /> 2022
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="year" value="2021" /> 2021
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="year" value="2020" /> 2020
+                </label>
+              </div>
+            </div>
+
+            <!-- QUESTION COUNT -->
+            <div class="setup-section">
+              <h4>❓ Number of Questions</h4>
+              <div class="q-count-options">
+                <button class="q-count-btn active" onclick="setQCount(this,20)">20 Qs</button>
+                <button class="q-count-btn" onclick="setQCount(this,40)">40 Qs</button>
+                <button class="q-count-btn" onclick="setQCount(this,60)">60 Qs</button>
+                <button class="q-count-btn" onclick="setQCount(this,100)">100 Qs</button>
+              </div>
+            </div>
+
+            <!-- TIMER SETUP -->
+            <div class="setup-section">
+              <h4>⏱ Set Timer</h4>
+              <div class="timer-setup">
+                <div class="timer-presets">
+                  <button class="timer-preset-btn active" onclick="setTimerPreset(this, 30)">30 min</button>
+                  <button class="timer-preset-btn" onclick="setTimerPreset(this, 60)">60 min</button>
+                  <button class="timer-preset-btn" onclick="setTimerPreset(this, 90)">90 min</button>
+                  <button class="timer-preset-btn" onclick="setTimerPreset(this, 120)">120 min</button>
+                  <button class="timer-preset-btn" onclick="setTimerPreset(this, 0)">Custom</button>
+                </div>
+                <div class="timer-custom" id="timer-custom-input">
+                  <label>Custom (minutes):</label>
+                  <input type="number" id="custom-minutes" min="5" max="300" value="60" placeholder="Enter minutes" />
+                </div>
+              </div>
+            </div>
+
+            <!-- DIFFICULTY -->
+            <div class="setup-section">
+              <h4>🎯 Difficulty</h4>
+              <div class="difficulty-options">
+                <label class="radio-option">
+                  <input type="radio" name="difficulty" value="all" checked /> All Levels
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="difficulty" value="easy" /> Easy
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="difficulty" value="medium" /> Medium
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="difficulty" value="hard" /> Hard
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR -->
+          <div class="setup-sidebar">
+            <div class="setup-summary glass-card">
+              <h4>Session Summary</h4>
+              <div class="summary-item">
+                <span>Exam Type</span>
+                <strong id="sum-type">JAMB</strong>
+              </div>
+              <div class="summary-item">
+                <span>Subjects</span>
+                <strong id="sum-subjects">All</strong>
+              </div>
+              <div class="summary-item">
+                <span>Questions</span>
+                <strong id="sum-qcount">20</strong>
+              </div>
+              <div class="summary-item">
+                <span>Duration</span>
+                <strong id="sum-duration">30 min</strong>
+              </div>
+              <div class="summary-item">
+                <span>Year</span>
+                <strong id="sum-year">Random</strong>
+              </div>
+
+              <div class="subscription-check" id="sub-check">
+                <div class="sub-check-free" id="sub-check-free">
+                  <div class="lock-icon">🔒</div>
+                  <p>Free plan: <strong>3 exams/day</strong> limit</p>
+                  <button class="btn-upgrade" onclick="showPage('subscription')">Upgrade to PRO</button>
+                </div>
+              </div>
+
+              <button class="btn-primary btn-full btn-xl" onclick="startExam()" id="start-exam-btn">
+                🚀 Start Practice Session
+              </button>
+            </div>
+
+            <div class="setup-tips glass-card">
+              <h4>💡 Tips</h4>
+              <ul>
+                <li>Attempt all questions — no negative marking</li>
+                <li>Review explanations after each session</li>
+                <li>Practice daily for best results</li>
+                <li>Timer auto-submits when time's up</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== EXAM INTERFACE PAGE =================== -->
+      <div id="page-exam" class="page exam-page">
+        <!-- EXAM TOP BAR -->
+        <div class="exam-topbar">
+          <div class="exam-info">
+            <span class="exam-type-label" id="exam-label">JAMB UTME</span>
+            <span class="exam-session" id="exam-session-id">Session #001</span>
+          </div>
+          <div class="exam-progress-bar-wrap">
+            <div class="exam-progress-bar" id="exam-progress-bar"></div>
+            <span class="exam-progress-text" id="exam-progress-text">0 / 20</span>
+          </div>
+          <div class="exam-timer-box" id="exam-timer-box">
+            <div class="timer-label">TIME LEFT</div>
+            <div class="timer-display" id="exam-timer">00:30:00</div>
+            <div class="timer-warning hidden" id="timer-warning">⚠️ Low time!</div>
+          </div>
+        </div>
+
+        <div class="exam-body">
+          <!-- QUESTION NAV GRID (left sidebar) -->
+          <div class="exam-sidebar">
+            <div class="exam-sidebar-header">Questions</div>
+            <div class="question-grid" id="question-grid"></div>
+            <div class="exam-legend">
+              <div class="legend-item"><span class="legend-dot answered"></span> Answered</div>
+              <div class="legend-item"><span class="legend-dot current"></span> Current</div>
+              <div class="legend-item"><span class="legend-dot unanswered"></span> Skipped</div>
+            </div>
+            <div class="exam-sidebar-stats">
+              <div class="sidebar-stat">
+                <span class="sidebar-stat-val" id="sb-answered">0</span>
+                <span>Answered</span>
+              </div>
+              <div class="sidebar-stat">
+                <span class="sidebar-stat-val" id="sb-skipped">0</span>
+                <span>Skipped</span>
+              </div>
+            </div>
+            <button class="btn-submit-exam" onclick="confirmSubmit()">Submit Exam</button>
+          </div>
+
+          <!-- MAIN QUESTION AREA -->
+          <div class="exam-main">
+            <!-- SUBJECT TABS -->
+            <div class="subject-tabs" id="subject-tabs"></div>
+
+            <!-- QUESTION CARD -->
+            <div class="question-card glass-card" id="question-card">
+              <div class="question-header">
+                <div class="question-meta">
+                  <span class="q-number" id="q-number">Question 1</span>
+                  <span class="q-subject-tag" id="q-subject-tag">Mathematics</span>
+                  <span class="q-year-tag" id="q-year-tag">2023</span>
+                  <span class="q-difficulty-tag" id="q-difficulty-tag">Medium</span>
+                </div>
+                <button class="btn-flag" id="flag-btn" onclick="toggleFlag()" title="Flag for review">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                    <line x1="4" y1="22" x2="4" y2="15" />
+                  </svg>
+                  Flag
+                </button>
+              </div>
+              <div class="question-text" id="question-text">Loading question...</div>
+              <div class="options-grid" id="options-grid"></div>
+              <div class="question-nav">
+                <button class="btn-nav" onclick="navigateQuestion(-1)" id="prev-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                  Previous
+                </button>
+                <button class="btn-skip" onclick="skipQuestion()">Skip →</button>
+                <button class="btn-nav btn-next" onclick="navigateQuestion(1)" id="next-btn">
+                  Next
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== RESULT PAGE =================== -->
+      <div id="page-result" class="page">
+        <div class="result-hero">
+          <div class="result-score-circle" id="result-score-circle">
+            <div class="score-inner">
+              <div class="score-percent" id="result-score-percent">0%</div>
+              <div class="score-label">Score</div>
+            </div>
+          </div>
+          <div class="result-meta">
+            <div class="result-grade" id="result-grade">Grade: F</div>
+            <h2 id="result-message">Keep Practicing!</h2>
+            <div class="result-stats-row">
+              <div class="result-stat"><strong id="r-correct">0</strong><span>Correct</span></div>
+              <div class="result-stat"><strong id="r-wrong">0</strong><span>Wrong</span></div>
+              <div class="result-stat"><strong id="r-skipped">0</strong><span>Skipped</span></div>
+              <div class="result-stat"><strong id="r-time">00:00</strong><span>Time Used</span></div>
+            </div>
+            <div class="result-actions">
+              <button class="btn-primary" onclick="reviewAnswers()">📋 Review Answers</button>
+              <button class="btn-secondary" onclick="showPage('dashboard')">🏠 Dashboard</button>
+              <button class="btn-secondary" onclick="showPage('leaderboard')">🏆 Leaderboard</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBJECT BREAKDOWN -->
+        <div class="result-breakdown glass-card" id="result-breakdown">
+          <h3>📊 Subject Breakdown</h3>
+          <div id="subject-breakdown-chart"></div>
+        </div>
+
+        <!-- ANSWER REVIEW -->
+        <div id="answer-review-section" class="hidden">
+          <h3 class="section-title">📋 Answer Review & <span class="gradient-text">Corrections</span></h3>
+          <div id="answer-review-list" class="review-list"></div>
+        </div>
+      </div>
+
+      <!-- =================== LEADERBOARD PAGE =================== -->
+      <div id="page-leaderboard" class="page">
+        <div class="page-header">
+          <h2 class="page-title">🏆 Global <span class="gradient-text">Leaderboard</span></h2>
+          <div class="leaderboard-filters">
+            <button class="filter-btn active" onclick="filterLeaderboard('all', this)">All Time</button>
+            <button class="filter-btn" onclick="filterLeaderboard('week', this)">This Week</button>
+            <button class="filter-btn" onclick="filterLeaderboard('today', this)">Today</button>
+          </div>
+        </div>
+
+        <div class="leaderboard-exam-filter">
+          <select id="lb-exam-filter" onchange="renderLeaderboard()">
+            <option value="all">All Exams</option>
+            <option value="JAMB">JAMB</option>
+            <option value="WAEC">WAEC</option>
+            <option value="NECO">NECO</option>
+            <option value="Aptitude">Job Aptitude</option>
+          </select>
+        </div>
+
+        <!-- TOP 3 PODIUM -->
+        <div class="podium" id="podium"></div>
+
+        <!-- FULL TABLE -->
+        <div class="leaderboard-table-wrap glass-card">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Exam</th>
+                <th>Score</th>
+                <th>Accuracy</th>
+                <th>Time</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- YOUR POSITION -->
+        <div class="your-position glass-card" id="your-position">
+          <h4>Your Position</h4>
+          <div id="your-position-content">Complete an exam to appear on the leaderboard.</div>
+        </div>
+      </div>
+
+      <!-- =================== ANALYSIS PAGE =================== -->
+      <div id="page-analysis" class="page">
+        <div class="page-header">
+          <h2 class="page-title">📊 Performance <span class="gradient-text">Analysis</span></h2>
+          <div class="analysis-period-filter">
+            <select id="analysis-period" onchange="renderAnalysis()">
+              <option value="all">All Time</option>
+              <option value="month">This Month</option>
+              <option value="week">This Week</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- OVERVIEW CARDS -->
+        <div class="analysis-overview" id="analysis-overview">
+          <div class="analysis-card glass-card">
+            <div class="ac-icon">📝</div>
+            <div class="ac-val" id="a-total">0</div>
+            <div class="ac-label">Total Sessions</div>
+          </div>
+          <div class="analysis-card glass-card">
+            <div class="ac-icon">🎯</div>
+            <div class="ac-val" id="a-avg">0%</div>
+            <div class="ac-label">Average Score</div>
+          </div>
+          <div class="analysis-card glass-card">
+            <div class="ac-icon">📈</div>
+            <div class="ac-val" id="a-best">0%</div>
+            <div class="ac-label">Best Score</div>
+          </div>
+          <div class="analysis-card glass-card">
+            <div class="ac-icon">⏱</div>
+            <div class="ac-val" id="a-time">0m</div>
+            <div class="ac-label">Avg Time/Q</div>
+          </div>
+        </div>
+
+        <!-- SUBJECT PERFORMANCE CHART -->
+        <div class="section">
+          <div class="glass-card chart-card">
+            <h3>📚 Performance by Subject</h3>
+            <div id="subject-perf-chart" class="bar-chart"></div>
+          </div>
+        </div>
+
+        <!-- WEAK AREAS SECTION -->
+        <div class="section">
+          <div class="glass-card weak-areas-card">
+            <h3>⚠️ Weak Areas <span class="gradient-text">(Topics to Focus On)</span></h3>
+            <p class="weak-areas-desc">Topics where you scored below 50% — concentrate here first!</p>
+            <div id="weak-areas-list" class="weak-areas-list"></div>
+          </div>
+        </div>
+
+        <!-- SCORE TREND CHART -->
+        <div class="section">
+          <div class="glass-card chart-card">
+            <h3>📈 Score Trend Over Time</h3>
+            <div id="score-trend-chart" class="trend-chart"></div>
+          </div>
+        </div>
+
+        <!-- TOPIC ACCURACY TABLE -->
+        <div class="section">
+          <div class="glass-card">
+            <h3>📋 Topic Accuracy Breakdown</h3>
+            <table class="topic-table">
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Subject</th>
+                  <th>Attempts</th>
+                  <th>Correct</th>
+                  <th>Accuracy</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="topic-accuracy-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== SUBSCRIPTION PAGE =================== -->
+      <div id="page-subscription" class="page">
+        <div class="page-header center-header">
+          <h2 class="page-title">💎 Upgrade Your <span class="gradient-text">Plan</span></h2>
+          <p class="page-sub">Unlock unlimited practice, all subjects, and advanced analytics</p>
+        </div>
+
+        <div class="plans-grid">
+          <!-- FREE PLAN -->
+          <div class="plan-card glass-card">
+            <div class="plan-name">Free</div>
+            <div class="plan-price">₦0 <span>/month</span></div>
+            <ul class="plan-features">
+              <li class="feature-yes">✅ 3 practice sessions/day</li>
+              <li class="feature-yes">✅ 20 questions per session</li>
+              <li class="feature-yes">✅ Instant scoring</li>
+              <li class="feature-yes">✅ Basic leaderboard</li>
+              <li class="feature-no">❌ No answer explanations</li>
+              <li class="feature-no">❌ No performance analysis</li>
+              <li class="feature-no">❌ No weak area analysis</li>
+              <li class="feature-no">❌ Limited subjects</li>
+            </ul>
+            <button class="btn-outline btn-full" disabled>Current Plan</button>
+          </div>
+
+          <!-- MONTHLY PRO -->
+          <div class="plan-card glass-card plan-popular">
+            <div class="plan-popular-badge">MOST POPULAR</div>
+            <div class="plan-name">Pro Monthly</div>
+            <div class="plan-price">₦2,500 <span>/month</span></div>
+            <ul class="plan-features">
+              <li class="feature-yes">✅ Unlimited sessions</li>
+              <li class="feature-yes">✅ All subjects & exams</li>
+              <li class="feature-yes">✅ Detailed answer explanations</li>
+              <li class="feature-yes">✅ Full performance analytics</li>
+              <li class="feature-yes">✅ Weak area analysis</li>
+              <li class="feature-yes">✅ Score trend charts</li>
+              <li class="feature-yes">✅ Priority leaderboard</li>
+              <li class="feature-yes">✅ Download results PDF</li>
+            </ul>
+            <button class="btn-primary btn-full" onclick="subscribePlan('monthly')">Get Pro Monthly</button>
+          </div>
+
+          <!-- ANNUAL PRO -->
+          <div class="plan-card glass-card plan-annual">
+            <div class="plan-annual-badge">SAVE 40%</div>
+            <div class="plan-name">Pro Annual</div>
+            <div class="plan-price">₦18,000 <span>/year</span></div>
+            <div class="plan-per-month">= ₦1,500/month</div>
+            <ul class="plan-features">
+              <li class="feature-yes">✅ Everything in Monthly</li>
+              <li class="feature-yes">✅ 40% savings vs monthly</li>
+              <li class="feature-yes">✅ Deep Topic Diagnostic Analysis</li>
+              <li class="feature-yes">✅ Study schedule planner</li>
+              <li class="feature-yes">✅ Mock exam simulator</li>
+              <li class="feature-yes">✅ Certificate of completion</li>
+              <li class="feature-yes">✅ VIP leaderboard badge</li>
+              <li class="feature-yes">✅ Email progress reports</li>
+            </ul>
+            <button class="btn-gold btn-full" onclick="subscribePlan('annual')">Get Pro Annual</button>
+          </div>
+        </div>
+
+        <div class="payment-methods glass-card">
+          <h4>Secure Payment Methods</h4>
+          <div class="payment-icons">
+            <span class="payment-icon">💳 Paystack</span>
+            <span class="payment-icon">🏦 Bank Transfer</span>
+            <span class="payment-icon">📱 USSD</span>
+            <span class="payment-icon">💰 Card</span>
+          </div>
+          <p class="payment-note">🔒 All payments secured with 256-bit SSL encryption</p>
+        </div>
+      </div>
+
+    </div><!-- /main-app -->
+  </div><!-- /app-root -->
+
+  <!-- ========= MODALS ========= -->
+  <!-- SUBMIT CONFIRM MODAL -->
+  <div id="submit-modal" class="modal-overlay hidden">
+    <div class="modal glass-card">
+      <div class="modal-icon">⚠️</div>
+      <h3>Submit Exam?</h3>
+      <p id="submit-modal-msg">You have answered <strong id="modal-answered">0</strong> of <strong
+          id="modal-total">0</strong> questions.</p>
+      <p id="modal-skipped-msg" class="modal-warn hidden"><strong id="modal-skipped">0</strong> questions are
+        unanswered.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('submit-modal')">Continue Exam</button>
+        <button class="btn-primary" onclick="submitExam()">Submit Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div id="payment-modal" class="modal-overlay hidden">
+    <div class="modal glass-card">
+      <div class="modal-icon">💎</div>
+      <h3 id="payment-modal-title">Subscribe to Pro</h3>
+      <div class="payment-form">
+        <div class="form-group">
+          <label>Cardholder Name</label>
+          <input type="text" id="pay-name" placeholder="John Doe" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="pay-email" placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Card Number</label>
+          <input type="text" id="pay-card" placeholder="**** **** **** ****" maxlength="19" />
+        </div>
+        <div class="payment-row">
+          <div class="form-group">
+            <label>Expiry</label>
+            <input type="text" id="pay-expiry" placeholder="MM/YY" />
+          </div>
+          <div class="form-group">
+            <label>CVV</label>
+            <input type="text" id="pay-cvv" placeholder="***" maxlength="3" />
+          </div>
+        </div>
+        <div class="pay-amount-display" id="pay-amount-display">Total: ₦2,500/month</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal('payment-modal')">Cancel</button>
+        <button class="btn-primary" onclick="processPayment()">🔒 Pay Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
