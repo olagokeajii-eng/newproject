@@ -13,6 +13,7 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="agent-styles.css" />
   <script>
     /* Immediate theme initialization to prevent flash */
     (function () {
@@ -130,11 +131,20 @@
           <span class="nav-title">TEST YOUR <span class="gradient-text">KNOWLEDGE</span></span>
         </div>
         <div class="nav-links">
-          <a href="#" class="nav-link active" onclick="showPage('dashboard')" id="nav-item-dashboard">Dashboard</a>
+          <a href="#" class="nav-link active" onclick="showPage('study-buddy')" id="nav-item-study-buddy">
+            <span>🤖 AI Study Buddy</span>
+            <span class="agent-mode-badge">AGENT</span>
+          </a>
+          <a href="#" class="nav-link" onclick="showPage('dashboard')" id="nav-item-dashboard">📝 CBT Practice Exams</a>
+          <a href="#" class="nav-link" onclick="switchBuddyTab('weak'); showPage('study-buddy')"
+            id="nav-item-weak-topics">🎯 Weak Topics</a>
+          <a href="#" class="nav-link" onclick="switchBuddyTab('timetable'); showPage('study-buddy')"
+            id="nav-item-timetable">📅 Timetable</a>
+          <a href="#" class="nav-link" onclick="switchBuddyTab('report'); showPage('study-buddy')"
+            id="nav-item-report">👨‍👩‍👧 Parent Report</a>
+          <a href="#" class="nav-link" onclick="switchBuddyTab('whatsapp'); showPage('study-buddy')"
+            id="nav-item-whatsapp">📲 WhatsApp</a>
           <a href="#" class="nav-link" onclick="showPage('leaderboard')" id="nav-item-leaderboard">🏆 Leaderboard</a>
-          <a href="#" class="nav-link" onclick="showPage('analysis')" id="nav-item-analysis">📊 Topic Analysis</a>
-          <a href="#" class="nav-link" onclick="showPage('subscription')" id="nav-item-subscription">💎 Pricing &
-            Plans</a>
         </div>
         <div class="nav-right">
           <button type="button" class="btn-theme-toggle" onclick="toggleTheme()" aria-label="Toggle light or dark theme"
@@ -158,8 +168,608 @@
         </div>
       </nav>
 
+      <!-- ===================== AI STUDY BUDDY AGENT PAGE ===================== -->
+      <div id="page-study-buddy" class="page active">
+        <!-- Agent Hero Banner -->
+        <div class="agent-hero">
+          <div class="agent-hero-left">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <span class="agent-mode-badge">⚡ ACTIVE AGENT v2.5</span>
+              <span class="exam-type-badge jamb" id="agent-target-badge">JAMB UTME</span>
+              <span class="exam-type-badge waec" style="font-size:11px;">WAEC READY</span>
+            </div>
+            <h2>AI Study Buddy <span class="gradient-text">AGENT</span></h2>
+            <p>Your 24/7 personalized exam tutor: send photos, voice notes, or questions. Step-by-step solutions with
+              instant quizzes, weak topic tracking, personal timetable & WhatsApp revision.</p>
+          </div>
+          <div class="agent-quick-actions">
+            <button class="btn-primary" onclick="switchBuddyTab('photo')">
+              <span>📸 Solve Photo Question</span>
+            </button>
+            <button class="btn-secondary" onclick="switchBuddyTab('voice')">
+              <span>🎙️ Voice Note</span>
+            </button>
+            <button class="btn-secondary" onclick="switchBuddyTab('whatsapp')">
+              <span>📲 WhatsApp Revision</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Subnav Tabs -->
+        <div class="agent-subnav">
+          <button class="agent-nav-tab active" id="tab-btn-chat" onclick="switchBuddyTab('chat')">
+            <span>💬 Chat & Ask AI</span>
+          </button>
+          <button class="agent-nav-tab" id="tab-btn-photo" onclick="switchBuddyTab('photo')">
+            <span>📸 Photo Question Solver</span>
+          </button>
+          <button class="agent-nav-tab" id="tab-btn-voice" onclick="switchBuddyTab('voice')">
+            <span>🎙️ Voice Notes</span>
+          </button>
+          <button class="agent-nav-tab" id="tab-btn-weak" onclick="switchBuddyTab('weak')">
+            <span>🎯 Weak Topics Radar</span>
+            <span class="tab-badge" id="weak-due-badge">4</span>
+          </button>
+          <button class="agent-nav-tab" id="tab-btn-timetable" onclick="switchBuddyTab('timetable')">
+            <span>📅 Timetable & Streak</span>
+            <span class="tab-badge" style="background:rgba(245,158,11,0.2); color:#f59e0b;"
+              id="streak-tab-badge">5🔥</span>
+          </button>
+          <button class="agent-nav-tab" id="tab-btn-report" onclick="switchBuddyTab('report')">
+            <span>👨‍👩‍👧 Parent Progress Report</span>
+          </button>
+          <button class="agent-nav-tab" id="tab-btn-whatsapp" onclick="switchBuddyTab('whatsapp')">
+            <span>📲 WhatsApp Revision Hub</span>
+          </button>
+        </div>
+
+        <!-- ================= SUBPAGE 1: CHAT & ASK AI ================= -->
+        <div id="buddy-subpage-chat" class="buddy-subpage">
+          <div class="agent-chat-wrapper">
+            <!-- Sidebar -->
+            <div class="chat-sidebar">
+              <div class="chat-sidebar-header">
+                <h4>📚 Focus Subject</h4>
+              </div>
+              <div class="chat-subject-pills">
+                <button class="subj-pill-btn active" onclick="selectChatSubject('Mathematics', this)">
+                  <span>📐 Mathematics</span>
+                  <span class="pill-tag">JAMB/WAEC</span>
+                </button>
+                <button class="subj-pill-btn" onclick="selectChatSubject('English Language', this)">
+                  <span>📖 English Language</span>
+                  <span class="pill-tag">JAMB/WAEC</span>
+                </button>
+                <button class="subj-pill-btn" onclick="selectChatSubject('Physics', this)">
+                  <span>⚡ Physics</span>
+                  <span class="pill-tag">JAMB/WAEC</span>
+                </button>
+                <button class="subj-pill-btn" onclick="selectChatSubject('Chemistry', this)">
+                  <span>🧪 Chemistry</span>
+                  <span class="pill-tag">JAMB/WAEC</span>
+                </button>
+                <button class="subj-pill-btn" onclick="selectChatSubject('Biology', this)">
+                  <span>🧬 Biology</span>
+                  <span class="pill-tag">JAMB/WAEC</span>
+                </button>
+                <button class="subj-pill-btn" onclick="selectChatSubject('Economics', this)">
+                  <span>📊 Economics</span>
+                  <span class="pill-tag">JAMB/WAEC</span>
+                </button>
+              </div>
+              <div class="chat-sidebar-footer">
+                <div style="font-size:11.5px; color:var(--text-secondary); margin-bottom:4px;">💡 Frequent Exam Prompts:
+                </div>
+                <button class="btn-demo-quick" style="text-align:left; font-size:11.5px; padding:6px 10px;"
+                  onclick="loadQuickPrompt('Differentiate y = (3x² - 5)⁴ step-by-step using chain rule')">
+                  Calculus Chain Rule
+                </button>
+                <button class="btn-demo-quick" style="text-align:left; font-size:11.5px; padding:6px 10px;"
+                  onclick="loadQuickPrompt('How do you calculate parallel resistance for 6Ω and 12Ω resistors?')">
+                  Parallel Resistors Trap
+                </button>
+                <button class="btn-demo-quick" style="text-align:left; font-size:11.5px; padding:6px 10px;"
+                  onclick="loadQuickPrompt('Explain Concord Rule of Proximity with Neither...Nor')">
+                  Concord Proximity Rule
+                </button>
+                <button class="btn-link" style="margin-top:4px; font-size:12px;" onclick="clearBuddyChat()">🗑️ Clear
+                  Conversation</button>
+              </div>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="chat-main-pane">
+              <div class="chat-header-bar">
+                <div class="chat-buddy-info">
+                  <div class="buddy-avatar-pulse">
+                    <span>🤖</span>
+                    <div class="buddy-status-dot"></div>
+                  </div>
+                  <div class="buddy-meta">
+                    <h3>AI Study Buddy <span style="font-size:11px; color:#10b981; font-weight:600;">● Online</span>
+                    </h3>
+                    <p id="chat-focus-status">Specialized in Nigerian Examinations · Syllabus Grounded RAG</p>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <button class="btn-secondary" style="padding:6px 12px; font-size:12px;"
+                    onclick="switchBuddyTab('photo')">
+                    📸 Photo Question
+                  </button>
+                  <button class="btn-secondary" style="padding:6px 12px; font-size:12px;"
+                    onclick="switchBuddyTab('voice')">
+                    🎙️ Voice Note
+                  </button>
+                </div>
+              </div>
+
+              <!-- Messages Stream -->
+              <div class="chat-messages-container" id="chat-messages-container">
+                <!-- Messages populated by JS -->
+              </div>
+
+              <!-- Input Toolbar & Controls -->
+              <div class="chat-input-bar-wrap">
+                <!-- Staging preview if photo/audio chosen -->
+                <div id="chat-staging-area" class="hidden"></div>
+
+                <div class="chat-input-controls">
+                  <textarea id="chat-input-text" class="chat-textarea"
+                    placeholder="Ask a question, paste a problem, or tap 📸 to upload a photo..." rows="1"
+                    onkeydown="handleChatInputKeyDown(event)"></textarea>
+
+                  <div class="chat-actions-group">
+                    <input type="file" id="chat-photo-input" accept="image/*" style="display:none;"
+                      onchange="handleChatPhotoSelected(event)" />
+                    <button type="button" class="btn-chat-media" title="Upload Question Photo"
+                      onclick="document.getElementById('chat-photo-input').click()">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                    </button>
+
+                    <button type="button" class="btn-chat-media" id="btn-chat-voice-record" title="Record Voice Note"
+                      onclick="toggleChatVoiceRecording()">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                      </svg>
+                    </button>
+
+                    <button type="button" class="btn-chat-send" id="btn-chat-send" onclick="sendChatUserMessage()">
+                      <span>Send</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SUBPAGE 2: PHOTO QUESTION SOLVER ================= -->
+        <div id="buddy-subpage-photo" class="buddy-subpage hidden">
+          <div class="photo-solver-grid">
+            <div class="glass-card" style="padding:28px;">
+              <h3 style="font-size:20px; font-weight:800; margin-bottom:8px;">📸 Photo Question <span
+                  class="gradient-text">Solver</span></h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:20px;">
+                Snap or upload a photo of any printed or handwritten past question, diagram, circuit, or equation.
+                GPT-4o Vision extracts the problem and explains it step-by-step.
+              </p>
+
+              <div class="photo-dropzone" id="photo-solver-dropzone"
+                onclick="document.getElementById('photo-solver-file').click()">
+                <div class="photo-dropzone-icon">📷</div>
+                <h4 style="margin-bottom:6px;">Drag & Drop Question Photo Here</h4>
+                <p style="color:var(--text-muted); font-size:13px; margin-bottom:14px;">Supports JPG, PNG, WEBP, or
+                  Mobile Camera Snaps</p>
+                <button type="button" class="btn-primary" style="pointer-events:none;">Browse Photo</button>
+                <input type="file" id="photo-solver-file" accept="image/*" style="display:none;"
+                  onchange="handlePhotoSolverUpload(event)" />
+              </div>
+
+              <!-- Preview & Scanning Indicator -->
+              <div id="photo-solver-preview-box" class="photo-preview-wrap hidden" style="margin-top:20px;">
+                <img id="photo-solver-preview-img" class="photo-preview-img" src="" alt="Question photo preview" />
+                <div class="scanner-laser" id="photo-scanner-laser"></div>
+              </div>
+
+              <div style="margin-top:20px;">
+                <label
+                  style="font-size:12.5px; font-weight:600; color:var(--text-secondary); margin-bottom:6px; display:block;">Add
+                  Extra Notes / Question Text (Optional):</label>
+                <input type="text" id="photo-solver-note"
+                  placeholder="e.g. Find the current across 6Ω resistor or verify Option C"
+                  style="width:100%; padding:10px 14px; border-radius:var(--radius-sm); background:var(--input-bg); border:1px solid var(--border); color:var(--text-primary);" />
+              </div>
+
+              <button class="btn-primary btn-full" id="btn-solve-photo-action" style="margin-top:16px;"
+                onclick="executePhotoSolver()" disabled>
+                <span>🔍 Analyze & Solve Step-by-Step</span>
+              </button>
+            </div>
+
+            <!-- Solution Pane -->
+            <div class="glass-card" style="padding:28px; display:flex; flex-direction:column;">
+              <h3
+                style="font-size:18px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
+                <span>📝 Worked Solution & Derivations</span>
+                <span id="photo-solution-status" class="user-badge free" style="display:none;">Ready</span>
+              </h3>
+
+              <div id="photo-solution-content" style="flex:1; overflow-y:auto; line-height:1.6; font-size:14px;">
+                <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+                  <div style="font-size:42px; margin-bottom:12px;">💡</div>
+                  <p>Upload a question photo on the left to see the complete mathematical derivation and examiner trap
+                    breakdown here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SUBPAGE 3: VOICE NOTE SOLVER ================= -->
+        <div id="buddy-subpage-voice" class="buddy-subpage hidden">
+          <div class="voice-solver-card glass-card">
+            <span class="agent-mode-badge" style="margin-bottom:12px;">🎙️ SPEECH-TO-SOLUTION AI</span>
+            <h3 style="font-size:24px; font-weight:800; margin-bottom:8px;">Ask by <span class="gradient-text">Voice
+                Note</span></h3>
+            <p style="color:var(--text-secondary); font-size:14px; max-width:480px; margin-bottom:20px;">
+              Don't feel like typing out a complex formula or question? Speak into your microphone just like leaving a
+              voice note, and AI Study Buddy will solve it.
+            </p>
+
+            <button type="button" class="voice-record-btn" id="voice-main-record-btn"
+              onclick="toggleMainVoiceRecording()">
+              🎙️
+            </button>
+
+            <div class="voice-timer" id="voice-main-timer">00:00</div>
+            <div class="voice-status-text" id="voice-main-status">Tap the microphone to start recording</div>
+
+            <!-- Waveform Canvas -->
+            <canvas id="voice-waveform-canvas" class="voice-waveform-canvas"></canvas>
+
+            <div style="width:100%; text-align:left; margin-top:20px;">
+              <div id="voice-transcript-box" class="chat-bubble"
+                style="background:var(--bg-secondary); border:1px solid var(--border); display:none; margin-bottom:16px;">
+                <strong style="color:var(--cyan); display:block; margin-bottom:6px;">Transcribed Question:</strong>
+                <p id="voice-transcript-text" style="font-size:14px; margin:0;"></p>
+              </div>
+
+              <div id="voice-solution-box" class="chat-bubble"
+                style="background:var(--bg-card); border:1px solid var(--border-bright); display:none;">
+                <strong style="color:var(--purple); display:block; margin-bottom:8px;">🎓 Step-by-Step
+                  Explanation:</strong>
+                <div id="voice-solution-text" style="font-size:14px; line-height:1.6;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SUBPAGE 4: WEAK TOPICS RADAR ================= -->
+        <div id="buddy-subpage-weak" class="buddy-subpage hidden weak-topics-page">
+          <!-- 4 Stats Banner -->
+          <div class="weak-stats-strip">
+            <div class="weak-stat-box glass-card">
+              <div class="wsb-icon red">⚠️</div>
+              <div class="wsb-meta">
+                <div class="wsb-val" id="wsb-critical-val">2</div>
+                <div class="wsb-lbl">Critical Weak Topics (&lt;50%)</div>
+              </div>
+            </div>
+            <div class="weak-stat-box glass-card">
+              <div class="wsb-icon amber">⏳</div>
+              <div class="wsb-meta">
+                <div class="wsb-val" id="wsb-developing-val">2</div>
+                <div class="wsb-lbl">Developing Topics (50-79%)</div>
+              </div>
+            </div>
+            <div class="weak-stat-box glass-card">
+              <div class="wsb-icon green">🏆</div>
+              <div class="wsb-meta">
+                <div class="wsb-val" id="wsb-mastered-val">6</div>
+                <div class="wsb-lbl">Mastered Topics (80%+)</div>
+              </div>
+            </div>
+            <div class="weak-stat-box glass-card">
+              <div class="wsb-icon blue">📅</div>
+              <div class="wsb-meta">
+                <div class="wsb-val" id="wsb-due-today-val">2</div>
+                <div class="wsb-lbl">SM-2 Spaced Reviews Due</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spaced Repetition Due Alert -->
+          <div class="week-analysis-banner glass-card" style="margin-bottom:24px; border-left:4px solid var(--gold);">
+            <div class="wab-left">
+              <span class="wab-badge" style="background:rgba(245,158,11,0.2); color:#f59e0b;">⏰ SuperMemo SM-2 Interval
+                Trigger</span>
+              <h3>Topics Scheduled for Revision Today</h3>
+              <p id="sm2-due-banner-text">SuperMemo spaced repetition algorithm has calculated that your memory trace is
+                decaying for 2 topics. Review now to consolidate long-term retention.</p>
+            </div>
+            <div class="wab-right">
+              <button class="btn-primary" onclick="startSpacedRepetitionSprint()">🚀 Start 5-Min Revision
+                Sprint</button>
+            </div>
+          </div>
+
+          <!-- Grid of Weak Topics -->
+          <h3 class="section-title" style="margin-bottom:16px;">Detailed <span class="gradient-text">Weak Topics
+              Radar</span></h3>
+          <div class="weak-topic-cards-grid" id="weak-topics-cards-container">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- ================= SUBPAGE 5: TIMETABLE & STREAK ================= -->
+        <div id="buddy-subpage-timetable" class="buddy-subpage hidden timetable-page">
+          <!-- Top Row: Streak Flame + Pomodoro Focus Station -->
+          <div class="streak-pomodoro-bar">
+            <!-- Streak Flame -->
+            <div class="streak-hero-card glass-card">
+              <div class="streak-flame-icon">🔥</div>
+              <div class="streak-details">
+                <span class="agent-mode-badge" style="margin-bottom:6px;">DAILY DISCIPLINE</span>
+                <h3 id="streak-flame-count">5 Days Active Streak!</h3>
+                <p>Consistent daily revision increases JAMB scores by an average of +45 marks.</p>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <button class="btn-primary" onclick="claimDailyStreakCheckIn()">⚡ Check In for Today (+50 XP)</button>
+                  <span style="font-size:12px; color:var(--text-muted);" id="streak-last-checkin">Checked in
+                    today</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pomodoro Timer -->
+            <div class="pomodoro-card glass-card">
+              <div>
+                <span
+                  style="font-size:11px; text-transform:uppercase; font-weight:700; color:var(--cyan); letter-spacing:0.05em;">⏱️
+                  Focus Study Station</span>
+                <div class="pomo-timer-display" id="pomo-timer-display">25:00</div>
+                <div style="font-size:12px; color:var(--text-secondary);" id="pomo-mode-label">Pomodoro Focus Session
+                </div>
+              </div>
+              <div class="pomo-controls">
+                <button class="btn-primary" id="btn-pomo-toggle" onclick="togglePomodoroTimer()">▶ Start</button>
+                <button class="btn-secondary" onclick="resetPomodoroTimer()">↺ Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Schedule Section -->
+          <div class="glass-card" style="padding:28px;">
+            <div
+              style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:20px;">
+              <div>
+                <h3 style="font-size:20px; font-weight:800;">Personalized <span class="gradient-text">Study
+                    Timetable</span></h3>
+                <p style="color:var(--text-secondary); font-size:13.5px;">Auto-balanced to allocate double study slots
+                  to your weakest examination subjects.</p>
+              </div>
+              <button class="btn-secondary" onclick="regenerateTimetable()">
+                <span>⚡ Re-Balance for My Weak Topics</span>
+              </button>
+            </div>
+
+            <!-- Day Selector Tabs -->
+            <div class="day-selector-tabs" id="timetable-day-tabs">
+              <button class="day-tab-btn active" onclick="selectTimetableDay('Monday', this)">Monday</button>
+              <button class="day-tab-btn" onclick="selectTimetableDay('Tuesday', this)">Tuesday</button>
+              <button class="day-tab-btn" onclick="selectTimetableDay('Wednesday', this)">Wednesday</button>
+              <button class="day-tab-btn" onclick="selectTimetableDay('Thursday', this)">Thursday</button>
+              <button class="day-tab-btn" onclick="selectTimetableDay('Friday', this)">Friday</button>
+              <button class="day-tab-btn" onclick="selectTimetableDay('Saturday', this)">Saturday</button>
+              <button class="day-tab-btn" onclick="selectTimetableDay('Sunday', this)">Sunday</button>
+            </div>
+
+            <!-- Slots for active day -->
+            <div class="timetable-slot-list" id="timetable-slots-container">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SUBPAGE 6: PARENT PROGRESS REPORT ================= -->
+        <div id="buddy-subpage-report" class="buddy-subpage hidden parent-report-page">
+          <div class="parent-report-card glass-card" id="printable-report-card">
+            <!-- Header -->
+            <div class="report-header">
+              <div class="report-branding">
+                <div class="report-logo-icon">🎓</div>
+                <div>
+                  <h2>OFFICIAL CANDIDATE PROGRESS REPORT</h2>
+                  <p>AI Study Buddy AGENT · Academic Monitoring & Performance Analytics</p>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="exam-type-badge jamb" id="rep-exam-type">JAMB UTME 2026</span>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:4px;" id="rep-date-stamp">Date: Oct 2026
+                </div>
+              </div>
+            </div>
+
+            <!-- Candidate Meta & Readiness Gauge -->
+            <div class="report-gauge-row">
+              <div class="readiness-dial-wrap">
+                <div class="readiness-dial" id="report-readiness-dial" style="--readiness: 76;">
+                  <div class="readiness-dial-inner">
+                    <div class="readiness-val" id="rep-readiness-val">76%</div>
+                    <div class="readiness-lbl">Readiness Score</div>
+                  </div>
+                </div>
+                <span class="user-badge pro" style="font-size:11px;">ON TRACK FOR 290+</span>
+              </div>
+
+              <div>
+                <h3 style="font-size:18px; font-weight:700; margin-bottom:8px;">Candidate: <span
+                    id="rep-student-name">Chidi Adeleke</span></h3>
+                <p style="font-size:13.5px; color:var(--text-secondary); margin-bottom:12px;">
+                  Target Score: <strong id="rep-target-score" style="color:var(--cyan);">320 / 400</strong> ·
+                  Daily Streak: <strong id="rep-streak-days" style="color:var(--gold);">5 Days</strong> ·
+                  Total Study Hours: <strong id="rep-study-hours" style="color:var(--purple);">8.5 Hours</strong>
+                </p>
+                <div class="tutor-quote-box" id="rep-tutor-remarks">
+                  "Chidi demonstrates solid mathematical and analytical reasoning. Targeted practice in parallel circuit
+                  configurations and electrochemistry will push performance well into the 300+ range."
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Performance Breakdown Table -->
+            <div>
+              <h4 style="font-size:15px; font-weight:700; margin-bottom:12px;">Subject-by-Subject Competency</h4>
+              <div style="overflow-x:auto;">
+                <table class="report-subject-table">
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Mastery</th>
+                      <th>Accuracy</th>
+                      <th>Grade Equivalent</th>
+                      <th>Weak Topics Identified</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rep-subject-table-body">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="report-actions-row">
+              <a href="#" id="btn-share-parent-whatsapp" target="_blank" class="btn-whatsapp-green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                </svg>
+                <span>Share Report to Parent's WhatsApp</span>
+              </a>
+
+              <button class="btn-secondary" onclick="window.print()">
+                <span>🖨️ Print / Download PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= SUBPAGE 7: WHATSAPP REVISION HUB & SIMULATOR ================= -->
+        <div id="buddy-subpage-whatsapp" class="buddy-subpage hidden">
+          <div class="whatsapp-hub-grid">
+            <!-- Left: Settings & Controls -->
+            <div class="glass-card" style="padding:28px;">
+              <span class="agent-mode-badge" style="margin-bottom:8px;">AUTOMATED DISPATCHER</span>
+              <h3 style="font-size:20px; font-weight:800; margin-bottom:8px;">WhatsApp Daily <span
+                  class="gradient-text">Micro-Lessons</span></h3>
+              <p style="color:var(--text-secondary); font-size:13.5px; margin-bottom:20px;">
+                Never miss a day. The AI Study Buddy sends a 3-minute morning spark and evening spaced revision question
+                directly to your WhatsApp phone number.
+              </p>
+
+              <div class="form-group" style="margin-bottom:16px;">
+                <label>Student's WhatsApp Phone Number</label>
+                <input type="text" id="wa-config-phone" value="+2348012345678" placeholder="+234..." />
+              </div>
+
+              <div class="form-group" style="margin-bottom:16px;">
+                <label>Parent/Guardian WhatsApp Number (For Weekly Reports)</label>
+                <input type="text" id="wa-config-parent-phone" value="+2348098765432" placeholder="+234..." />
+              </div>
+
+              <div class="form-group" style="margin-bottom:20px;">
+                <label>Scheduled Revision Times</label>
+                <div style="display:flex; gap:10px; margin-top:6px;">
+                  <span class="user-badge free">🌅 Morning: 06:30 AM</span>
+                  <span class="user-badge free">🌙 Evening: 19:30 PM</span>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn-primary btn-full" onclick="triggerManualWhatsAppBroadcast()">
+                  <span>🚀 Dispatch Today's Micro-Lesson Now</span>
+                </button>
+                <button class="btn-secondary btn-full" onclick="openDirectWhatsAppChat()">
+                  <span>📲 Open in WhatsApp Web / App</span>
+                </button>
+              </div>
+
+              <div style="margin-top:24px; border-top:1px solid var(--border); padding-top:16px;">
+                <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-secondary); margin-bottom:8px;">
+                  Recent WhatsApp Transmissions:</h4>
+                <div id="wa-recent-logs-list" style="font-size:12px; display:flex; flex-direction:column; gap:6px;">
+                  <!-- Logs -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Interactive Smartphone Simulator -->
+            <div>
+              <div style="text-align:center; font-size:12px; color:var(--text-secondary); margin-bottom:8px;">
+                📱 Interactive Live WhatsApp Phone Simulator
+              </div>
+              <div class="whatsapp-phone-mockup">
+                <div class="phone-notch"></div>
+                <!-- WhatsApp Header -->
+                <div class="phone-wa-header">
+                  <div class="wa-header-avatar">🤖</div>
+                  <div class="wa-header-meta">
+                    <h4>AI Study Buddy AGENT</h4>
+                    <span>online</span>
+                  </div>
+                </div>
+
+                <!-- Messages Body -->
+                <div class="wa-messages-body" id="wa-simulator-body">
+                  <div class="wa-msg incoming">
+                    🌅 *JAMB Morning Spark with AI Study Buddy!*<br /><br />
+                    Hello Chidi! 👋 Today's 3-Minute Revision:<br />
+                    🎯 *Subject:* Physics · _Electric Current & Circuits_<br /><br />
+                    ⚠️ *CRITICAL EXAM TRAP*:<br />
+                    For resistors in parallel: <code>1/R = 1/R1 + 1/R2</code><br /><br />
+                    ❓ *DAILY 30-SEC CHALLENGE*:<br />
+                    Two 10Ω resistors are connected in parallel. What is the equivalent resistance?<br /><br />
+                    *A)* 20Ω<br />
+                    *B)* 10Ω<br />
+                    *C)* 5Ω<br />
+                    *D)* 2.5Ω<br />
+                    <div class="wa-quick-opt-btns">
+                      <button class="wa-opt-btn" onclick="simulateWhatsAppReply('A')">A: 20Ω</button>
+                      <button class="wa-opt-btn" onclick="simulateWhatsAppReply('B')">B: 10Ω</button>
+                      <button class="wa-opt-btn" onclick="simulateWhatsAppReply('C')">C: 5Ω (Correct)</button>
+                      <button class="wa-opt-btn" onclick="simulateWhatsAppReply('D')">D: 2.5Ω</button>
+                    </div>
+                    <div class="wa-msg-time">06:30 AM ✓✓</div>
+                  </div>
+                </div>
+
+                <!-- Input Row -->
+                <div class="phone-wa-input">
+                  <input type="text" id="wa-sim-input" placeholder="Type A, B, C, or D..."
+                    onkeydown="if(event.key==='Enter') simulateWhatsAppCustomReply()" />
+                  <button class="phone-wa-send" onclick="simulateWhatsAppCustomReply()">➤</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===================== DASHBOARD PAGE ===================== -->
-      <div id="page-dashboard" class="page active">
+      <div id="page-dashboard" class="page">
         <div class="page-hero">
           <div class="hero-content">
             <div class="hero-greeting" id="hero-greeting">Good morning, Student! 👋</div>
@@ -833,6 +1443,7 @@
   <div id="toast-container" class="toast-container"></div>
 
   <script src="app.js"></script>
+  <script src="agent-app.js"></script>
 </body>
 
 </html>

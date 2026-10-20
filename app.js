@@ -450,7 +450,7 @@ function initApp() {
   }
 
   updateDashboardStats();
-  showPage('dashboard');
+  showPage('study-buddy');
 }
 
 function updateDashboardStats() {
@@ -541,6 +541,7 @@ function showPage(pageId) {
   if (topnav) topnav.style.display = pageId === 'exam' ? 'none' : 'flex';
 
   // Page-specific init
+  if (pageId === 'study-buddy' && typeof initStudyBuddy === 'function') initStudyBuddy();
   if (pageId === 'leaderboard') renderLeaderboard();
   if (pageId === 'analysis')    renderAnalysis();
   if (pageId === 'dashboard')   updateDashboardStats();
@@ -1092,6 +1093,11 @@ function reviewAnswers() {
               🔒 <a href="#" onclick="showPage('subscription');" style="color:var(--cyan)">Upgrade to Pro</a> to see detailed explanations for all questions.
             </div>`
         }
+        <div style="margin-top:12px;">
+          <button type="button" class="btn-primary" style="font-size:12px; padding:6px 14px; display:inline-flex; align-items:center; gap:6px;" onclick="explainQuestionWithBuddy('${encodeURIComponent(q.question)}', '${q.subject}', '${q.topic}')">
+            <span>💡 Ask AI Study Buddy to Explain Step-by-Step</span>
+          </button>
+        </div>
       </div>
     `;
   }).join('');
@@ -1518,20 +1524,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // Restore user session or prefill demo account for easy accessibility
   try {
     const savedUserJson = localStorage.getItem('tyk_user');
+    let userToLoad = null;
     if (savedUserJson) {
-      const savedUser = JSON.parse(savedUserJson);
-      const existing = DB.users.find(u => u.email.toLowerCase() === (savedUser.email || '').toLowerCase());
-      STATE.currentUser = existing || savedUser;
-      if (!existing && STATE.currentUser) {
-        DB.users.push(STATE.currentUser);
-      }
-      initApp();
-    } else {
-      const emailInput = document.getElementById('login-email');
-      const passInput  = document.getElementById('login-password');
-      if (emailInput && !emailInput.value) emailInput.value = 'student@test.com';
-      if (passInput && !passInput.value) passInput.value = 'password';
+      try {
+        const savedUser = JSON.parse(savedUserJson);
+        userToLoad = DB.users.find(u => u.email.toLowerCase() === (savedUser.email || '').toLowerCase()) || savedUser;
+      } catch (e) {}
     }
+    if (!userToLoad) {
+      userToLoad = DB.users[0]; // Default demo student
+    }
+    STATE.currentUser = userToLoad;
+    if (!DB.users.find(u => u.id === userToLoad.id)) {
+      DB.users.push(userToLoad);
+    }
+    initApp();
   } catch (err) {
     console.warn('Session restore note:', err);
   }
